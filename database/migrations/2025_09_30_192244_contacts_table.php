@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -26,8 +27,8 @@ return new class extends Migration
             $table->string('state', length: 2)->nullable(false);
             $table->string('latitude', length: 12)->nullable(false);
             $table->string('longitude', length: 12)->nullable(false);
-            $table->timestamp('created_at', precision: 0)->nullable(false)->default(date('Y-m-d H:i:s'));
-            $table->timestamp('updated_at', precision: 0)->nullable(false)->default(date('Y-m-d H:i:s'));
+            $table->timestampTz('created_at')->default(new Expression('CURRENT_DATE'));
+            $table->timestampTz('updated_at')->default(new Expression('CURRENT_DATE'));
         });
     }
 

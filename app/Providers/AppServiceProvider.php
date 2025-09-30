@@ -20,11 +20,6 @@ class AppServiceProvider extends RouteServiceProvider
      */
     public function boot(): void
     {
-        // parent::boot();
-
-        // // Adiciona aqui a carga do arquivo de rotas customizado
-        // Route::prefix('api')
-        //     ->middleware('api')
-        //     ->group(base_path('app/Routes/api.php'));
+        //
     }
 }

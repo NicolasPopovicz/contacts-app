@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -22,14 +23,14 @@ return new class extends Migration
             $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
-            $table->timestamp('created_at', precision: 0)->default(date('Y-m-d H:i:s'));
-            $table->timestamp('updated_at', precision: 0)->default(date('Y-m-d H:i:s'));
+            $table->timestampTz('created_at')->default(new Expression('CURRENT_DATE'));
+            $table->timestampTz('updated_at')->default(new Expression('CURRENT_DATE'));
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
-            $table->timestamp('created_at', precision: 0)->default(date('Y-m-d H:i:s'));
+            $table->timestampTz('created_at')->default(new Expression('CURRENT_DATE'));
         });
 
         Schema::create('sessions', function (Blueprint $table) {

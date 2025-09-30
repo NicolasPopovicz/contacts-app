@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 // Route::post('/register', [AuthController::class, 'register']);
@@ -10,14 +12,13 @@ use Illuminate\Support\Facades\Route;
 
 // Route::middleware('auth:sanctum')->group(function () {
 //     // Usuário
-//     Route::get('/me', [UserController::class, 'me']);
-//     Route::delete('/me', [UserController::class, 'deleteAccount']);
-//     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [UserController::class, 'me']);
+    Route::delete('/me', [UserController::class, 'deleteAccount']);
+    // Route::post('/logout', [AuthController::class, 'logout']);
 
     // Contatos
-    Route::get('/contacts/list', [ContactController::class, 'index']);   // listagem com filtros
-    Route::post('/contact/create', [ContactController::class, 'store']);  // criar
-    Route::get('/contact/{id}', [ContactController::class, 'show']); // detalhes
-    Route::put('/contact/{id}/update', [ContactController::class, 'update']); // atualizar
-    Route::delete('/contact/{id}/delete', [ContactController::class, 'destroy']); // excluir
+    Route::get('/contacts/list', [ContactController::class, 'index']);
+    Route::post('/contact/create', [ContactController::class, 'store']);
+    Route::put('/contact/{id}/update', [ContactController::class, 'update']);
+    Route::delete('/contact/{id}/delete', [ContactController::class, 'destroy']);
 // });

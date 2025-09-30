@@ -2,40 +2,82 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\DTO\Contact\CreateContactDTO;
+use App\DTO\Contact\DeleteContactDTO;
+use App\DTO\Contact\ListContactDTO;
+use App\DTO\Contact\UpdateContactDTO;
+use App\Http\Requests\Contact\CreateContactRequest;
+use App\Http\Requests\Contact\DeleteContactRequest;
+use App\Http\Requests\Contact\ListContactRequest;
+use App\Http\Requests\Contact\UpdateContactRequest;
+use App\Services\ContactService;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContactController extends Controller
 {
-    public function index(Request $req)
+    public function __construct(protected ContactService $contactService)
     {
+        $this->contactService = $contactService;
+    }
+
+    /**
+     * @param  ListContactRequest $req
+     * @return JsonResponse
+     */
+    public function index(ListContactRequest $req): JsonResponse
+    {
+        $dto = ListContactDTO::fromRequest($req);
+
+        $contactsLists = $this->contactService->list($dto);
+
         return response()->json([
-            'message' => 'list'
+            'success' => true,
+            'message' => 'Lista de contatos',
+            'data'    => $contactsLists
         ], 200);
     }
 
-    public function store(Request $req)
+    /**
+     * @param  CreateContactRequest $req
+     * @return JsonResponse
+     */
+    public function store(CreateContactRequest $req): JsonResponse
     {
+        $dto = CreateContactDTO::fromRequest($req);
+
+        $this->contactService->create($dto);
+
         return response()->json([
             'message' => 'create'
         ], 201);
     }
 
-    public function show(Request $req)
+    /**
+     * @param  UpdateContactRequest $req
+     * @param  string|integer       $id
+     * @return JsonResponse
+     */
+    public function update(UpdateContactRequest $req, string|int $id): JsonResponse
     {
-        return response()->json([
-            'message' => 'show'
-        ], 200);
-    }
+        $dto = UpdateContactDTO::fromRequest($req);
 
-    public function update(Request $req)
-    {
+        $this->contactService->update($id, $dto);
+
         return response()->json([
             'message' => 'update'
         ], 201);
     }
 
-    public function destroy(Request $req)
+    /**
+     * @param  DeleteContactRequest $req
+     * @return JsonResponse
+     */
+    public function destroy(DeleteContactRequest $req): JsonResponse
     {
+        $dto = DeleteContactDTO::fromRequest($req);
+
+        $this->contactService->delete($dto);
+
         return response()->json([
             'message' => 'destroy'
         ], 200);

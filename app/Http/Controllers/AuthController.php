@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\Http\Controllers;
+namespace App\Http\Controllers;
 
 // use App\Application\UseCases\User\RegisterUser;
 // use App\Domain\User\Repositories\UserRepositoryInterface;
@@ -10,8 +10,8 @@ namespace App\Interfaces\Http\Controllers;
 // use Illuminate\Support\Facades\Hash;
 // use Illuminate\Routing\Controller;
 
-// class AuthController extends Controller
-// {
+class AuthController extends Controller
+{
 //     private RegisterUser $registerUser;
 //     private UserRepositoryInterface $userRepository;
 
@@ -80,4 +80,4 @@ namespace App\Interfaces\Http\Controllers;
 //     {
 //         return response()->json($request->user());
 //     }
-// }
+}
