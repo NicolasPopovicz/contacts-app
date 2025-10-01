@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\User\DeleteAccountDTO;
+use App\DTO\User\ForgotPasswordDTO;
+use App\DTO\User\LoginUserDTO;
 use App\DTO\User\RegisterUserDTO;
+use App\DTO\User\ResetPasswordDTO;
+use App\Http\Requests\User\DeleteAccountRequest;
+use App\Http\Requests\User\ForgotPasswordRequest;
+use App\Http\Requests\User\LoginRequest;
 use App\Http\Requests\User\RegisterUserRequest;
-use App\Models\User;
+use App\Http\Requests\User\ResetPasswordRequest;
 use App\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthController extends Controller
@@ -29,102 +33,85 @@ class AuthController extends Controller
 
         $data = $this->userService->createUser($dto);
 
-        return $this->handleReturn(true, 'Usuário registrado com sucesso', $data, 201);
+        return $this->handleReturn(true, 'Usuário registrado com sucesso.', $data, 201);
     }
 
-    public function login(Request $request)
+    /**
+     * @param  LoginRequest $req
+     * @return JsonResponse
+     */
+    public function login(LoginRequest $req): JsonResponse
     {
-        $credentials = $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required',
-        ]);
+        $dto = LoginUserDTO::fromRequest($req);
 
-        if (!Auth::attempt($credentials)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Credenciais inválidas'
-            ], 401);
-        }
+        $data = $this->userService->authenticateUser($dto);
 
-        $user = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $return = !$data
+            ? [false, "Credenciais inválidas.", $dto, 401]
+            : [true, "Login realizado com sucesso!", $data, 200];
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Login realizado com sucesso',
-            'data'    => [
-                'user'  => $user,
-                'token' => $token,
-            ]
-        ]);
+        return $this->handleReturn(...$return);
     }
 
-    public function logout(Request $request)
+    /**
+     * @param  Request $request
+     * @return JsonResponse
+     */
+    public function logout(Request $request): JsonResponse
     {
         $request->user()->tokens()->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Logout realizado com sucesso'
-        ]);
+        return $this->handleReturn(true, "Logout realizado com sucesso!");
     }
 
-    public function forgotPassword(Request $request)
+    /**
+     * @param  ForgotPasswordRequest $req
+     * @return JsonResponse
+     */
+    public function forgotPassword(ForgotPasswordRequest $req): JsonResponse
     {
-        $request->validate(['email' => 'required|email']);
+        $dto = ForgotPasswordDTO::fromRequest($req);
 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $data = $this->userService->sendEmailRecoverLogin($dto);
 
-        return $status === Password::RESET_LINK_SENT
-            ? response()->json(['success' => true, 'message' => 'Link de recuperação enviado para o e-mail.'])
-            : response()->json(['success' => false, 'message' => 'Não foi possível enviar o link.'], 500);
+        $return = !$data
+            ? [false, "Não foi possível enviar o link.", [], 500]
+            : [true, "Link de recuperação enviado para o e-mail '{$dto->email}'.", [], 200];
+
+        return $this->handleReturn(...$return);
     }
 
-    public function resetPassword(Request $request)
+    /**
+     * @param  ResetPasswordRequest $req
+     * @return JsonResponse
+     */
+    public function resetPassword(ResetPasswordRequest $req): JsonResponse
     {
-        $request->validate([
-            'token'    => 'required',
-            'email'    => 'required|email',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        $dto = ResetPasswordDTO::fromRequest($req);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->save();
+        $data = $this->userService->recreatePassword($dto);
 
-                $user->tokens()->delete();
-            }
-        );
+        $return = !$data
+            ? [false, "Falha ao redefinir senha.", [], 500]
+            : [true, "Senha redefinida com sucesso!", [], 200];
 
-        return $status === Password::PASSWORD_RESET
-            ? response()->json(['success' => true, 'message' => 'Senha redefinida com sucesso.'])
-            : response()->json(['success' => false, 'message' => 'Falha ao redefinir senha.'], 500);
+        return $this->handleReturn(...$return);
     }
 
-    public function deleteAccount(Request $request)
+    /**
+     * @param  DeleteAccountRequest $req
+     * @return JsonResponse
+     */
+    public function deleteAccount(DeleteAccountRequest $req): JsonResponse
     {
-        $request->validate(['password' => 'required|string']);
+        $dto = DeleteAccountDTO::fromRequest($req);
 
-        $user = $request->user();
+        $data = $this->userService->deleteUser($dto);
 
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Senha incorreta. Não foi possível excluir a conta.'
-            ], 403);
-        }
+        $return = !$data
+            ? [false, "Senha incorreta. Não foi possível excluir a conta.", [], 400]
+            : [true, "Conta excluída com sucesso!", [], 200];
 
-        $user->tokens()->delete();
-        $user->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Conta excluída com sucesso.'
-        ]);
+        return $this->handleReturn(...$return);
     }
 }

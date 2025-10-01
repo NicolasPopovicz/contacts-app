@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained(
                 table: 'users', indexName: 'contacts_user_id'
-            );
+            )->onDelete('CASCADE');
             $table->string('name', length: 150)->nullable(false);
             $table->string('cpf', length: 11)->unique()->nullable(false);
             $table->string('phone', length: 11)->nullable(false);

@@ -3,14 +3,13 @@
 namespace App\Models;
 
 use App\DTO\Contact\CreateContactDTO;
-use App\DTO\Contact\DeleteContactDTO;
 use App\DTO\Contact\ListContactDTO;
 use App\DTO\Contact\UpdateContactDTO;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
-use Exception;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
+use Exception;
 
 class Contact extends Model
 {

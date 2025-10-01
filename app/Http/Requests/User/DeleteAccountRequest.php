@@ -4,7 +4,7 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ResetPasswordRequest extends FormRequest
+class DeleteAccountRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,7 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token'    => 'required',
-            'email'    => 'required|string|email|min:3|max:200',
-            'password' => 'required|string|min:3|max:50|confirmed',
+            'password' => 'required|string|min:3|max:50'
         ];
     }
 
@@ -34,12 +32,6 @@ class ResetPasswordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'token.required'    => 'O token é obrigatório.',
-            'email.required'    => 'O campo email é obrigatório.',
-            'email.string'      => 'O campo email deve ser um texto válido.',
-            'email.email'       => 'O campo email deve ser válido.',
-            'email.min'         => 'O campo email deve ter entre :min e :max caracteres.',
-            'email.max'         => 'O campo email não pode conter mais de :max caracteres.',
             'password.required' => 'O campo password é obrigatório.',
             'password.string'   => 'O campo password deve ser um texto válido.',
             'password.min'      => 'O campo password deve ter entre :min e :max caracteres.',

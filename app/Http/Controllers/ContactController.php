@@ -28,17 +28,9 @@ class ContactController extends Controller
 
         $contactsLists = $this->contactService->list($dto);
 
-        $return = empty($contactsLists) ? [
-            true,
-            "Não há contatos para listar",
-            [],
-            200
-        ] : [
-            true,
-            "Listagem de contatos obtida com sucesso!",
-            $contactsLists,
-            200
-        ];
+        $return = empty($contactsLists)
+            ? [true, "Não há contatos para listar.", [], 200]
+            : [true, "Listagem de contatos obtida com sucesso!", $contactsLists, 200];
 
         return $this->handleReturn(...$return);
     }
@@ -53,17 +45,9 @@ class ContactController extends Controller
 
         $contactCreated = $this->contactService->create($dto);
 
-        $return = !$contactCreated ? [
-            false,
-            "Já existe um contato com estes dados.",
-            ['name' => $dto->name, 'cpf' => $dto->cpf],
-            400
-        ] : [
-            true,
-            "Contato '{$dto->name}' cadastrado com sucesso!",
-            $contactCreated,
-            201
-        ];
+        $return = !$contactCreated
+            ? [false, "Já existe um contato com estes dados.", ['name' => $dto->name, 'cpf' => $dto->cpf], 400]
+            : [true, "Contato '{$dto->name}' cadastrado com sucesso!", $contactCreated, 201];
 
         return $this->handleReturn(...$return);
     }
@@ -79,17 +63,9 @@ class ContactController extends Controller
 
         $contactUpdated = $this->contactService->update($id, $dto);
 
-        $return = !$contactUpdated ? [
-            false,
-            "Não foi possível encontrar o contato com os dados fornecidos",
-            [],
-            400
-        ] : [
-            true,
-            "Contato '{$dto->name}' cadastrado com sucesso!",
-            $contactUpdated,
-            200
-        ];
+        $return = !$contactUpdated
+            ? [false, "Não foi possível encontrar o contato com os dados fornecidos.", [], 400]
+            : [true, "Contato '{$dto->name}' cadastrado com sucesso!", $contactUpdated, 200];
 
         return $this->handleReturn(...$return);
     }
@@ -106,17 +82,9 @@ class ContactController extends Controller
 
         $contactDeleted = $this->contactService->delete($id);
 
-        $return = !$contactDeleted ? [
-            false,
-            "Não foi possível encontrar o contato com os dados fornecidos",
-            [],
-            400
-        ] : [
-            true,
-            "Contato excluído com sucesso!",
-            $contactDeleted,
-            200
-        ];
+        $return = !$contactDeleted
+            ? [false, "Não foi possível encontrar o contato com os dados fornecidos.", [], 400]
+            : [true, "Contato excluído com sucesso!", $contactDeleted, 200];
 
         return $this->handleReturn(...$return);
     }
