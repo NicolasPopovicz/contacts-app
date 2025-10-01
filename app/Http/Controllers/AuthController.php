@@ -2,82 +2,129 @@
 
 namespace App\Http\Controllers;
 
-// use App\Application\UseCases\User\RegisterUser;
-// use App\Domain\User\Repositories\UserRepositoryInterface;
-// use App\Interfaces\Http\Requests\RegisterRequest;
-// use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Auth;
-// use Illuminate\Support\Facades\Hash;
-// use Illuminate\Routing\Controller;
+use App\DTO\User\RegisterUserDTO;
+use App\Http\Requests\User\RegisterUserRequest;
+use App\Models\User;
+use App\Services\UserService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthController extends Controller
 {
-//     private RegisterUser $registerUser;
-//     private UserRepositoryInterface $userRepository;
+    public function __construct(protected UserService $userService)
+    {
+        $this->userService = $userService;
+    }
 
-//     public function __construct(RegisterUser $registerUser, UserRepositoryInterface $userRepository)
-//     {
-//         $this->registerUser = $registerUser;
-//         $this->userRepository = $userRepository;
-//     }
+    /**
+     * @param  RegisterUserRequest $req
+     * @return JsonResponse
+     */
+    public function register(RegisterUserRequest $req): JsonResponse
+    {
+        $dto = RegisterUserDTO::fromRequest($req);
 
-//     /**
-//      * Cadastro de usuário
-//      */
-//     public function register(RegisterRequest $request)
-//     {
-//         $user = $this->registerUser->execute(
-//             $request->name,
-//             $request->email,
-//             $request->password
-//         );
+        $data = $this->userService->createUser($dto);
 
-//         return response()->json([
-//             'id'    => $user->getId(),
-//             'name'  => $user->getName(),
-//             'email' => (string) $user->getEmail(),
-//         ], 201);
-//     }
+        return $this->handleReturn(true, 'Usuário registrado com sucesso', $data, 201);
+    }
 
-//     /**
-//      * Login - retorna token Sanctum
-//      */
-//     public function login(Request $request)
-//     {
-//         $credentials = $request->validate([
-//             'email'    => ['required', 'email'],
-//             'password' => ['required'],
-//         ]);
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
 
-//         if (!Auth::attempt($credentials)) {
-//             return response()->json(['message' => 'Credenciais inválidas'], 401);
-//         }
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Credenciais inválidas'
+            ], 401);
+        }
 
-//         $user = Auth::user();
+        $user = Auth::user();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-//         $token = $user->createToken('auth_token')->plainTextToken;
+        return response()->json([
+            'success' => true,
+            'message' => 'Login realizado com sucesso',
+            'data'    => [
+                'user'  => $user,
+                'token' => $token,
+            ]
+        ]);
+    }
 
-//         return response()->json([
-//             'access_token' => $token,
-//             'token_type'   => 'Bearer',
-//         ]);
-//     }
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
 
-//     /**
-//      * Logout - revoga token atual
-//      */
-//     public function logout(Request $request)
-//     {
-//         $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout realizado com sucesso'
+        ]);
+    }
 
-//         return response()->json(['message' => 'Logout realizado com sucesso']);
-//     }
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
 
-//     /**
-//      * Retorna dados do usuário logado
-//      */
-//     public function me(Request $request)
-//     {
-//         return response()->json($request->user());
-//     }
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+            ? response()->json(['success' => true, 'message' => 'Link de recuperação enviado para o e-mail.'])
+            : response()->json(['success' => false, 'message' => 'Não foi possível enviar o link.'], 500);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token'    => 'required',
+            'email'    => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->save();
+
+                $user->tokens()->delete();
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? response()->json(['success' => true, 'message' => 'Senha redefinida com sucesso.'])
+            : response()->json(['success' => false, 'message' => 'Falha ao redefinir senha.'], 500);
+    }
+
+    public function deleteAccount(Request $request)
+    {
+        $request->validate(['password' => 'required|string']);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Senha incorreta. Não foi possível excluir a conta.'
+            ], 403);
+        }
+
+        $user->tokens()->delete();
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Conta excluída com sucesso.'
+        ]);
+    }
 }

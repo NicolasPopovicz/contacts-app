@@ -7,7 +7,9 @@ use App\DTO\Contact\DeleteContactDTO;
 use App\DTO\Contact\ListContactDTO;
 use App\DTO\Contact\UpdateContactDTO;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 class Contact extends Model
@@ -21,6 +23,7 @@ class Contact extends Model
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'name',
         'cpf',
         'phone',
@@ -33,9 +36,9 @@ class Contact extends Model
 
     /**
      * @param  ListContactDTO $contactDTO
-     * @return self
+     * @return Collection
      */
-    public function findContactBy(ListContactDTO $contactDTO): self
+    public function findContactBy(ListContactDTO $contactDTO): Collection
     {
         $name = $contactDTO->name ?? '';
         $cpf  = $contactDTO->cpf  ?? '';
@@ -57,12 +60,22 @@ class Contact extends Model
 
     /**
      * @param  CreateContactDTO $contactDTO
-     * @return self
+     * @return self|false
      */
-    public function createContact(CreateContactDTO $contactDTO): self
+    public function createContact(CreateContactDTO $contactDTO): self|false
     {
+        $user = Auth::user();
+
         try {
+            $checkIfExists = self::where(function ($query) use ($contactDTO) {
+                $query->where('name', 'ILIKE', "%".strtolower($contactDTO->name)."%");
+                $query->orWhere('cpf', 'ILIKE', "%".$contactDTO->cpf."%");
+            })->count();
+
+            if ($checkIfExists) return false;
+
             $contactCreated = self::create([
+                'user_id'   => $user->id,
                 'name'      => $contactDTO->name,
                 'cpf'       => $contactDTO->cpf,
                 'phone'     => $contactDTO->phone,
@@ -84,12 +97,14 @@ class Contact extends Model
     /**
      * @param  string|integer   $id
      * @param  UpdateContactDTO $contactDTO
-     * @return self
+     * @return self|false
      */
-    public function updateContact(string|int $id, UpdateContactDTO $contactDTO): self
+    public function updateContact(string|int $id, UpdateContactDTO $contactDTO): self|false
     {
         try {
-            $contact = self::findOrFail($id);
+            $contact = self::find($id);
+
+            if (!$contact) return false;
 
             $contact->update([
                 'name'      => $contactDTO->name      ?? $contact->name,
@@ -111,13 +126,17 @@ class Contact extends Model
     }
 
     /**
-     * @param  DeleteContactDTO $contactDTO
-     * @return self
+     * @param  string|int $id
+     * @return boolean
      */
-    public function deleteContact(DeleteContactDTO $contactDTO): self
+    public function deleteContact(string|int $id): bool
     {
         try {
-            $contactDeleted = self::where('id', $contactDTO->id)->delete($contactDTO);
+            $contact = self::find($id);
+
+            if (!$contact) return false;
+
+            $contactDeleted = $contact->delete();
         } catch (Throwable $th) {
             throw new Exception($th->getMessage(), 500);
         } catch (Exception $e) {

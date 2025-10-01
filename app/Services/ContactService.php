@@ -7,6 +7,7 @@ use App\DTO\Contact\DeleteContactDTO;
 use App\DTO\Contact\ListContactDTO;
 use App\DTO\Contact\UpdateContactDTO;
 use App\Models\Contact;
+use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContactService
@@ -20,59 +21,36 @@ class ContactService
      * @param  ListContactDTO $contactDTO
      * @return Contact
      */
-    public function list(ListContactDTO $contactDTO): Contact
+    public function list(ListContactDTO $contactDTO): Collection
     {
-        $contacts = $this->contactModel->findContactBy($contactDTO);
-
-        return $contacts;
+        return $this->contactModel->findContactBy($contactDTO);
     }
 
     /**
      * @param  CreateContactDTO $contactDTO
-     * @return Contact
+     * @return Contact|false
      */
-    public function create(CreateContactDTO $contactDTO): Contact
+    public function create(CreateContactDTO $contactDTO): Contact|false
     {
-        $create = $this->contactModel->createContact($contactDTO);
-
-        return $create;
+        return $this->contactModel->createContact($contactDTO);
     }
 
     /**
      * @param  string|integer   $id
      * @param  UpdateContactDTO $contactDTO
-     * @return Contact
+     * @return Contact|false
      */
-    public function update(string|int $id, UpdateContactDTO $contactDTO): Contact
+    public function update(string|int $id, UpdateContactDTO $contactDTO): Contact|false
     {
-        $update = $this->contactModel->updateContact($id, $contactDTO);
-
-        return $update;
+        return $this->contactModel->updateContact($id, $contactDTO);
     }
 
     /**
-     * @param  DeleteContactDTO $contactDTO
-     * @return Contact
+     * @param  string|int $id
+     * @return boolean
      */
-    public function delete(DeleteContactDTO $contactDTO): Contact
+    public function delete(string|int $id): bool
     {
-        $delete = $this->contactModel->deleteContact($contactDTO);
-
-        return $delete;
-    }
-
-    /**
-     * @param  boolean $success
-     * @param  string  $message
-     * @param  mixed   $data
-     * @return JsonResponse
-     */
-    public function handleReturn(bool $success = true, string $message = '', mixed $data = null): JsonResponse
-    {
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-            'data'    => $data
-        ]);
+        return $this->contactModel->deleteContact($id);
     }
 }

@@ -23,7 +23,7 @@ class CreateContactRequest extends FormRequest
     {
         return [
             'name'      => 'required|string|min:3|max:150',
-            'cpf'       => 'required|string|size:11|regex:/^\d+$/|cpf|unique:contacts,cpf',
+            'cpf'       => 'required|string|size:11|regex:/^\d+$/',
             'phone'     => 'required|string|max:11',
             'address'   => 'nullable|string|max:200',
             'cep'       => 'required|string|max:8',
@@ -39,17 +39,24 @@ class CreateContactRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.string'   => 'O campo name deve ser um texto válido.',
-            'name.min'      => 'O campo name deve conter entre :min e :max caracteres.',
-            'name.max'      => 'O campo name não pode ter mais que :max caracteres.',
-            'cpf.size'      => 'O CPF deve conter :size dígitos.',
-            'cpf.regex'     => 'O CPF informado não é válido.',
-            'phone.max'     => 'O campo phone deve ser menor ou igual a :max dígitos.',
-            'address.max'   => 'O campo address não pode ter mais que :max caracteres.',
-            'cep.max'       => 'O campo cep não pode ter mais que :max dígitos.',
-            'state.max'     => 'O campo state deve conter :size caracteres.',
-            'latitude.max'  => 'O campo latitude não pode ter mais que :max caracteres.',
-            'longitude.max' => 'O campo longitude não pode ter mais que :max caracteres.',
+            'name.string'        => 'O campo name deve ser um texto válido.',
+            'name.min'           => 'O campo name deve conter entre :min e :max caracteres.',
+            'name.max'           => 'O campo name não pode ter mais que :max caracteres.',
+            'name.required'      => 'O campo name é obrigatório.',
+            'cpf.size'           => 'O CPF deve conter :size dígitos.',
+            'cpf.regex'          => 'O CPF informado não é válido.',
+            'cpf.required'       => 'O campo CPF é obrigatório.',
+            'phone.max'          => 'O campo phone deve ser menor ou igual a :max dígitos.',
+            'phone.required'     => 'O campo phone é obrigatório.',
+            'address.max'        => 'O campo address não pode ter mais que :max caracteres.',
+            'cep.max'            => 'O campo cep não pode ter mais que :max dígitos.',
+            'cep.required'       => 'O campo cep é obrigatório.',
+            'state.max'          => 'O campo state deve conter :size caracteres.',
+            'state.required'     => 'O campo state é obrigatório.',
+            'latitude.max'       => 'O campo latitude não pode ter mais que :max caracteres.',
+            'latitude.required'  => 'O campo latitude é obrigatório.',
+            'longitude.max'      => 'O campo longitude não pode ter mais que :max caracteres.',
+            'longitude.required' => 'O campo longitude é obrigatório.',
         ];
     }
 }

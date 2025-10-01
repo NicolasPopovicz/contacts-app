@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\DTO\Contact\CreateContactDTO;
-use App\DTO\Contact\DeleteContactDTO;
 use App\DTO\Contact\ListContactDTO;
 use App\DTO\Contact\UpdateContactDTO;
 use App\Http\Requests\Contact\CreateContactRequest;
-use App\Http\Requests\Contact\DeleteContactRequest;
 use App\Http\Requests\Contact\ListContactRequest;
 use App\Http\Requests\Contact\UpdateContactRequest;
 use App\Services\ContactService;
@@ -30,11 +28,19 @@ class ContactController extends Controller
 
         $contactsLists = $this->contactService->list($dto);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Lista de contatos',
-            'data'    => $contactsLists
-        ], 200);
+        $return = empty($contactsLists) ? [
+            true,
+            "Não há contatos para listar",
+            [],
+            200
+        ] : [
+            true,
+            "Listagem de contatos obtida com sucesso!",
+            $contactsLists,
+            200
+        ];
+
+        return $this->handleReturn(...$return);
     }
 
     /**
@@ -45,11 +51,21 @@ class ContactController extends Controller
     {
         $dto = CreateContactDTO::fromRequest($req);
 
-        $this->contactService->create($dto);
+        $contactCreated = $this->contactService->create($dto);
 
-        return response()->json([
-            'message' => 'create'
-        ], 201);
+        $return = !$contactCreated ? [
+            false,
+            "Já existe um contato com estes dados.",
+            ['name' => $dto->name, 'cpf' => $dto->cpf],
+            400
+        ] : [
+            true,
+            "Contato '{$dto->name}' cadastrado com sucesso!",
+            $contactCreated,
+            201
+        ];
+
+        return $this->handleReturn(...$return);
     }
 
     /**
@@ -61,25 +77,47 @@ class ContactController extends Controller
     {
         $dto = UpdateContactDTO::fromRequest($req);
 
-        $this->contactService->update($id, $dto);
+        $contactUpdated = $this->contactService->update($id, $dto);
 
-        return response()->json([
-            'message' => 'update'
-        ], 201);
+        $return = !$contactUpdated ? [
+            false,
+            "Não foi possível encontrar o contato com os dados fornecidos",
+            [],
+            400
+        ] : [
+            true,
+            "Contato '{$dto->name}' cadastrado com sucesso!",
+            $contactUpdated,
+            200
+        ];
+
+        return $this->handleReturn(...$return);
     }
 
     /**
-     * @param  DeleteContactRequest $req
+     * @param  string|int $id
      * @return JsonResponse
      */
-    public function destroy(DeleteContactRequest $req): JsonResponse
+    public function destroy(string|int $id): JsonResponse
     {
-        $dto = DeleteContactDTO::fromRequest($req);
+        if (!preg_match("/^\d+$/", $id)) {
+            return $this->handleReturn(false, "Parâmetro inválido", [], 400);
+        }
 
-        $this->contactService->delete($dto);
+        $contactDeleted = $this->contactService->delete($id);
 
-        return response()->json([
-            'message' => 'destroy'
-        ], 200);
+        $return = !$contactDeleted ? [
+            false,
+            "Não foi possível encontrar o contato com os dados fornecidos",
+            [],
+            400
+        ] : [
+            true,
+            "Contato excluído com sucesso!",
+            $contactDeleted,
+            200
+        ];
+
+        return $this->handleReturn(...$return);
     }
 }

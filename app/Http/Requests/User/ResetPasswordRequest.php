@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Contact;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DeleteContactRequest extends FormRequest
+class ResetPasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -22,7 +22,7 @@ class DeleteContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|exists:contacts,id',
+            //
         ];
     }
 }

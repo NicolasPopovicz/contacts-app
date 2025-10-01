@@ -22,8 +22,10 @@ class ListContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'nullable|string|max:150',
-            'cpf'  => 'nullable|string|max:11|regex:/^\d+$/',
+            'name'    => 'nullable|string|max:150',
+            'cpf'     => 'nullable|string|min:3|max:11|regex:/^\d+$/',
+            'page'    => 'nullable|string',
+            'records' => 'nullable|string'
         ];
     }
 
@@ -36,6 +38,7 @@ class ListContactRequest extends FormRequest
             'name.string' => 'O campo nome deve ser um texto válido.',
             'name.max'    => 'O campo nome não pode ter mais que :max caracteres.',
             'cpf.max'     => 'O CPF não pode conter mais de :max dígitos.',
+            'cpf.min'     => 'Para consultar por CPF, digite pelo menos :min ou mais dígitos.',
             'cpf.regex'   => 'O CPF informado não é válido.',
         ];
     }
