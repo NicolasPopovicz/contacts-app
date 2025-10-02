@@ -19,4 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/contact/create',        [ContactController::class, 'store']);
     Route::put('/contact/{id}/update',    [ContactController::class, 'update']);
     Route::delete('/contact/{id}/delete', [ContactController::class, 'destroy']);
+
+    // ViaCep
+    Route::get('/address/search',  [ContactController::class, 'searchContactAddress']);
 });

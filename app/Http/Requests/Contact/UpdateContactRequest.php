@@ -23,7 +23,7 @@ class UpdateContactRequest extends FormRequest
     {
         return [
             'name'      => 'sometimes|required|string|min:3|max:150',
-            'cpf'       => 'sometimes|required|string|size:11|regex:/^\d+$/|cpf|unique:contacts,cpf,' . $this->route('id'),
+            'cpf'       => 'sometimes|required|string|size:11|regex:/^\d+$/',
             'phone'     => 'sometimes|required|string|max:11',
             'address'   => 'nullable|string|max:200',
             'cep'       => 'sometimes|required|string|max:8',

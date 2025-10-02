@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Contact\AddressSearchDTO;
 use App\DTO\Contact\CreateContactDTO;
 use App\DTO\Contact\ListContactDTO;
 use App\DTO\Contact\UpdateContactDTO;
+use App\Http\Requests\Contact\AddressRequest;
 use App\Http\Requests\Contact\CreateContactRequest;
 use App\Http\Requests\Contact\ListContactRequest;
 use App\Http\Requests\Contact\UpdateContactRequest;
 use App\Services\ContactService;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ContactController extends Controller
@@ -66,6 +69,23 @@ class ContactController extends Controller
         $return = !$contactUpdated
             ? [false, "Não foi possível encontrar o contato com os dados fornecidos.", [], 400]
             : [true, "Contato '{$dto->name}' cadastrado com sucesso!", $contactUpdated, 200];
+
+        return $this->handleReturn(...$return);
+    }
+
+    /**
+     * @param  AddressRequest $req
+     * @return JsonResponse
+     */
+    public function searchContactAddress(AddressRequest $req): JsonResponse
+    {
+        $dto = AddressSearchDTO::fromRequest($req);
+
+        $addresses = $this->contactService->searchAddr($dto);
+
+        $return = !$addresses
+            ? [false, "Não foi possível encontrar o endereço com os dados fornecidos.", [], 400]
+            : [true, "Lista de endereços carregada com sucesso!", $addresses, 200];
 
         return $this->handleReturn(...$return);
     }
