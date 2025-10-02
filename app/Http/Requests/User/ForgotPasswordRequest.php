@@ -22,7 +22,7 @@ class ForgotPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|string|email|min:3|max:200'
+            'email' => 'required|string|email|max:200'
         ];
     }
 
@@ -32,11 +32,10 @@ class ForgotPasswordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'O campo email é obrigatório.',
-            'email.string'   => 'O campo email deve ser um texto válido.',
-            'email.email'    => 'O campo email deve ser válido.',
-            'email.min'      => 'O campo email deve ter entre :min e :max caracteres.',
-            'email.max'      => 'O campo email não pode conter mais de :max caracteres.'
+            'email.required' => 'O campo E-mail é obrigatório.',
+            'email.string'   => 'O campo E-mail deve ser um texto válido.',
+            'email.email'    => 'O campo E-mail deve ser válido.',
+            'email.max'      => 'O campo E-mail não pode conter mais de :max caracteres.'
         ];
     }
 }

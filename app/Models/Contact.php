@@ -27,7 +27,10 @@ class Contact extends Model
         'cpf',
         'phone',
         'address',
+        'complement',
         'cep',
+        'number',
+        'city',
         'state',
         'latitude',
         'longitude'
@@ -43,7 +46,8 @@ class Contact extends Model
         $cpf  = $contactDTO->cpf  ?? '';
 
         try {
-            $contactsList = self::where(function ($query) use ($name, $cpf) {
+            $contactsList = self::where('user_id', Auth::user()->id)
+                ->where(function ($query) use ($name, $cpf) {
                     if ($name) $query->where('name', 'ILIKE', "%".strtolower($name)."%");
                     if ($cpf)  $query->orWhere('cpf', 'ILIKE', "%".$cpf."%");
                 })
@@ -74,15 +78,18 @@ class Contact extends Model
             if ($checkIfExists) return false;
 
             $contactCreated = self::create([
-                'user_id'   => $user->id,
-                'name'      => $contactDTO->name,
-                'cpf'       => $contactDTO->cpf,
-                'phone'     => $contactDTO->phone,
-                'address'   => $contactDTO->address,
-                'cep'       => $contactDTO->cep,
-                'state'     => $contactDTO->state,
-                'latitude'  => $contactDTO->latitude,
-                'longitude' => $contactDTO->longitude
+                'user_id'    => $user->id,
+                'name'       => $contactDTO->name,
+                'cpf'        => $contactDTO->cpf,
+                'phone'      => $contactDTO->phone,
+                'address'    => $contactDTO->address,
+                'complement' => $contactDTO->complement,
+                'cep'        => $contactDTO->cep,
+                'number'     => $contactDTO->number,
+                'city'       => $contactDTO->city,
+                'state'      => $contactDTO->state,
+                'latitude'   => $contactDTO->latitude,
+                'longitude'  => $contactDTO->longitude
             ]);
         } catch (Throwable $th) {
             throw new Exception($th->getMessage(), 500);
@@ -106,14 +113,17 @@ class Contact extends Model
             if (!$contact) return false;
 
             $contact->update([
-                'name'      => $contactDTO->name      ?? $contact->name,
-                'cpf'       => $contactDTO->cpf       ?? $contact->cpf,
-                'phone'     => $contactDTO->phone     ?? $contact->phone,
-                'address'   => $contactDTO->address   ?? $contact->address,
-                'cep'       => $contactDTO->cep       ?? $contact->cep,
-                'state'     => $contactDTO->state     ?? $contact->state,
-                'latitude'  => $contactDTO->latitude  ?? $contact->latitude,
-                'longitude' => $contactDTO->longitude ?? $contact->longitude
+                'name'       => $contactDTO->name       ?? $contact->name,
+                'cpf'        => $contactDTO->cpf        ?? $contact->cpf,
+                'phone'      => $contactDTO->phone      ?? $contact->phone,
+                'address'    => $contactDTO->address    ?? $contact->address,
+                'complement' => $contactDTO->complement ?? $contact->complement,
+                'cep'        => $contactDTO->cep        ?? $contact->cep,
+                'number'     => $contactDTO->number     ?? $contact->number,
+                'city'       => $contactDTO->city       ?? $contact->city,
+                'state'      => $contactDTO->state      ?? $contact->state,
+                'latitude'   => $contactDTO->latitude   ?? $contact->latitude,
+                'longitude'  => $contactDTO->longitude  ?? $contact->longitude
             ]);
         } catch (Throwable $th) {
             throw new Exception($th->getMessage(), 500);

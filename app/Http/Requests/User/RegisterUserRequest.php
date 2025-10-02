@@ -22,9 +22,9 @@ class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'     => 'required|string|min:3|max:150',
+            'name'     => 'required|string|max:150',
             'email'    => 'required|string|email|min:3|max:200',
-            'password' => 'required|string|min:3|max:50'
+            'password' => 'required|string|min:5|max:50'
         ];
     }
 
@@ -34,19 +34,18 @@ class RegisterUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'     => 'O campo name é obrigatório.',
-            'name.string'       => 'O campo name deve ser um texto válido.',
-            'name.min'          => 'O campo name deve ter entre :min e :max caracteres.',
-            'name.max'          => 'O campo name não pode ter mais que :max caracteres.',
-            'email.required'    => 'O campo email é obrigatório.',
-            'email.string'      => 'O campo email deve ser um texto válido.',
-            'email.email'       => 'O campo email deve ser válido.',
-            'email.min'         => 'O campo email deve ter entre :min e :max caracteres.',
-            'email.max'         => 'O campo email não pode conter mais de :max caracteres.',
-            'password.required' => 'O campo password é obrigatório.',
-            'password.string'   => 'O campo password deve ser um texto válido.',
-            'password.min'      => 'O campo password deve ter entre :min e :max caracteres.',
-            'password.max'      => 'O campo password não pode conter mais de :max caracteres.',
+            'name.required'     => 'O campo Nome é obrigatório.',
+            'name.string'       => 'O campo Nome deve ser um texto válido.',
+            'name.max'          => 'O campo Nome não pode ter mais que :max caracteres.',
+            'email.required'    => 'O campo E-mail é obrigatório.',
+            'email.string'      => 'O campo E-mail deve ser um texto válido.',
+            'email.email'       => 'O campo E-mail deve ser válido.',
+            'email.min'         => 'O campo E-mail deve ter mais do que :min caracteres.',
+            'email.max'         => 'O campo E-mail não pode conter mais de :max caracteres.',
+            'password.required' => 'O campo Senha é obrigatório.',
+            'password.string'   => 'O campo Senha deve ser um texto válido.',
+            'password.min'      => 'O campo Senha deve ter mais do que :min caracteres.',
+            'password.max'      => 'O campo Senha não pode conter mais de :max caracteres.',
         ];
     }
 }

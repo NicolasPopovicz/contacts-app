@@ -35,11 +35,11 @@ class AddressRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'cep.size'      => "O campo 'cep' deve conter :size dígitos.",
-            'cep.regex'     => "O campo 'cep' informado não é válido.",
-            'state.size'    => "O campo 'state' deve conter :size caracteres.",
-            'city.min'      => "O campo 'city' deve conter no mínimo :size caracteres.",
-            'address.min'   => "O campo 'address' deve conter no mínimo :size caracteres."
+            'cep.size'      => "O campo CEP deve conter :size dígitos.",
+            'cep.regex'     => "O campo CEP informado não é válido.",
+            'state.size'    => "O campo Estado (UF) deve conter :size caracteres.",
+            'city.min'      => "O campo Cidade deve conter no mínimo :size caracteres.",
+            'address.min'   => "O campo Endereço deve conter no mínimo :size caracteres."
         ];
     }
 }

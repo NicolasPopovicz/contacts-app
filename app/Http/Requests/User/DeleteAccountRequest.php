@@ -22,7 +22,7 @@ class DeleteAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'password' => 'required|string|min:3|max:50'
+            'password' => 'required|string'
         ];
     }
 
@@ -32,10 +32,8 @@ class DeleteAccountRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'password.required' => 'O campo password é obrigatório.',
-            'password.string'   => 'O campo password deve ser um texto válido.',
-            'password.min'      => 'O campo password deve ter entre :min e :max caracteres.',
-            'password.max'      => 'O campo password não pode conter mais de :max caracteres.',
+            'password.required' => 'O campo Senha é obrigatório.',
+            'password.string'   => 'O campo Senha deve ser um texto válido.',
         ];
     }
 }

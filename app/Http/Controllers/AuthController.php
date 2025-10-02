@@ -47,7 +47,7 @@ class AuthController extends Controller
         $data = $this->userService->authenticateUser($dto);
 
         $return = !$data
-            ? [false, "Credenciais inválidas.", $dto, 401]
+            ? [false, "Credenciais inválidas.", [], 400]
             : [true, "Login realizado com sucesso!", $data, 200];
 
         return $this->handleReturn(...$return);

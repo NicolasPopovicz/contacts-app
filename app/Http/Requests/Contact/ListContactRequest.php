@@ -35,9 +35,9 @@ class ListContactRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.string' => 'O campo nome deve ser um texto válido.',
-            'name.max'    => 'O campo nome não pode ter mais que :max caracteres.',
-            'cpf.max'     => 'O CPF não pode conter mais de :max dígitos.',
+            'name.string' => 'O campo Nome deve ser um texto válido.',
+            'name.max'    => 'O campo Nome não pode ter mais que :max caracteres.',
+            'cpf.max'     => 'O campo CPF não pode conter mais de :max dígitos.',
             'cpf.min'     => 'Para consultar por CPF, digite pelo menos :min ou mais dígitos.',
             'cpf.regex'   => 'O CPF informado não é válido.',
         ];

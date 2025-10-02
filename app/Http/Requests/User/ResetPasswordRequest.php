@@ -23,8 +23,8 @@ class ResetPasswordRequest extends FormRequest
     {
         return [
             'token'    => 'required',
-            'email'    => 'required|string|email|min:3|max:200',
-            'password' => 'required|string|min:3|max:50|confirmed',
+            'email'    => 'required|string|email|max:200',
+            'password' => 'required|string|max:50|confirmed',
         ];
     }
 
@@ -34,16 +34,14 @@ class ResetPasswordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'token.required'    => 'O token é obrigatório.',
-            'email.required'    => 'O campo email é obrigatório.',
-            'email.string'      => 'O campo email deve ser um texto válido.',
-            'email.email'       => 'O campo email deve ser válido.',
-            'email.min'         => 'O campo email deve ter entre :min e :max caracteres.',
-            'email.max'         => 'O campo email não pode conter mais de :max caracteres.',
-            'password.required' => 'O campo password é obrigatório.',
-            'password.string'   => 'O campo password deve ser um texto válido.',
-            'password.min'      => 'O campo password deve ter entre :min e :max caracteres.',
-            'password.max'      => 'O campo password não pode conter mais de :max caracteres.',
+            'token.required'    => 'O Token é obrigatório.',
+            'email.required'    => 'O campo E-mail é obrigatório.',
+            'email.string'      => 'O campo E-mail deve ser um texto válido.',
+            'email.email'       => 'O campo E-mail deve ser válido.',
+            'email.max'         => 'O campo E-mail não pode conter mais de :max caracteres.',
+            'password.required' => 'O campo Senha é obrigatório.',
+            'password.string'   => 'O campo Senha deve ser um texto válido.',
+            'password.max'      => 'O campo Senha não pode conter mais de :max caracteres.',
         ];
     }
 }

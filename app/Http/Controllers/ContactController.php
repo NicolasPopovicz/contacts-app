@@ -68,7 +68,7 @@ class ContactController extends Controller
 
         $return = !$contactUpdated
             ? [false, "Não foi possível encontrar o contato com os dados fornecidos.", [], 400]
-            : [true, "Contato '{$dto->name}' cadastrado com sucesso!", $contactUpdated, 200];
+            : [true, "Contato '{$dto->name}' atualizado com sucesso!", $contactUpdated, 200];
 
         return $this->handleReturn(...$return);
     }

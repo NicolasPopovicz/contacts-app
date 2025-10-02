@@ -23,7 +23,10 @@ return new class extends Migration
             $table->string('cpf', length: 11)->unique()->nullable(false);
             $table->string('phone', length: 11)->nullable(false);
             $table->string('address', length: 200)->nullable();
+            $table->string('complement', length: 75)->nullable();
             $table->string('cep', length: 8)->nullable(false);
+            $table->string('number', length: 10)->nullable(false);
+            $table->string('city', length: 75)->nullable(false);
             $table->string('state', length: 2)->nullable(false);
             $table->string('latitude', length: 12)->nullable(false);
             $table->string('longitude', length: 12)->nullable(false);
