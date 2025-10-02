@@ -81,7 +81,13 @@ class UserService
      */
     public function sendEmailRecoverLogin(ForgotPasswordDTO $dto): bool
     {
-        $status = Password::sendResetLink($dto->email);
+        try {
+            $status = Password::sendResetLink(['email' =>$dto->email]);
+        } catch (Throwable $th) {
+            throw new Exception($th->getMessage(), 500);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage(), 500);
+        }
 
         return $status === Password::RESET_LINK_SENT;
     }
@@ -94,7 +100,12 @@ class UserService
     {
         try {
             $status = Password::reset(
-                [$dto->email, $dto->password, $dto->password_confirmation, $dto->token],
+                [
+                    'email'                 => $dto->email,
+                    'password'              => $dto->password,
+                    'password_confirmation' => $dto->password_confirmation,
+                    'token'                 => $dto->token,
+                ],
                 function ($user, $password) {
                     $user->forceFill(['password' => Hash::make($password)])->save();
 
