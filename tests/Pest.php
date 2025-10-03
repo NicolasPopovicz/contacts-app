@@ -11,9 +11,24 @@
 |
 */
 
-pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+// pest()->extend(Tests\TestCase::class)
+//  // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
+//     ->in('Feature');
+
+uses(Tests\TestCase::class)->in('Feature')
+    ->beforeEach(function () {
+        $this->artisan('migrate:fresh');
+    })
+    ->in('Feature', 'Unit');
+
+function actingAsUser()
+{
+    $user = \App\Models\User::factory()->create();
+    \Laravel\Sanctum\Sanctum::actingAs($user);
+
+    return $user;
+}
+
 
 /*
 |--------------------------------------------------------------------------

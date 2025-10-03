@@ -3,6 +3,7 @@
 namespace App\External;
 
 use App\DTO\Contact\AddressSearchDTO;
+use Illuminate\Support\Facades\Http;
 use Throwable;
 use Exception;
 
@@ -21,40 +22,20 @@ class ViaCep
         }
 
         $query = $this->handleQuerySearch($dto);
-        $url = "https://viacep.com.br/ws/{$query}/json/";
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL            => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => 'GET',
-        ));
+        $url   = "https://viacep.com.br/ws/{$query}/json/";
 
         try {
-            $response = curl_exec($curl);
+            $response = Http::timeout(10)->get($url);
 
-            if ($response === false) {
-                $error = curl_error($curl);
-                curl_close($curl);
-                dd($error);
+            if ($response->failed()) {
+                throw new Exception('Erro ao consultar ViaCep', $response->status());
             }
 
-            curl_close($curl);
+            return $response->json();
 
-            $response = json_decode($response, true);
         } catch (Throwable $th) {
-            throw new Exception($th->getMessage(), 500);
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage(), 500);
+            throw new Exception('Erro na requisição ViaCep: '.$th->getMessage(), 500);
         }
-
-        return $response;
     }
 
     /**

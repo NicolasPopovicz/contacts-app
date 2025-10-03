@@ -59,7 +59,7 @@ class ContactService
         $addresses   = $this->viaCepExternal->searchAddress($dto);
         $geolocation = new GoogleGeolocation();
 
-        if (array_key_exists('erro', $addresses)) {
+        if (is_null($addresses) || array_key_exists('erro', $addresses)) {
             return null;
         }
 
