@@ -15,20 +15,12 @@
 //  // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
 //     ->in('Feature');
 
-uses(Tests\TestCase::class)->in('Feature')
-    ->beforeEach(function () {
-        $this->artisan('migrate:fresh');
-    })
-    ->in('Feature', 'Unit');
+// uses(Tests\TestCase::class)->beforeEach(function () {
+//     $this->artisan('migrate:fresh');
+// })
+// ->in('Feature', 'Unit');
 
-function actingAsUser()
-{
-    $user = \App\Models\User::factory()->create();
-    \Laravel\Sanctum\Sanctum::actingAs($user);
-
-    return $user;
-}
-
+uses(Tests\TestCase::class)->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

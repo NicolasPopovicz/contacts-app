@@ -1,46 +1,56 @@
 <?php
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+describe('Testing User\'s actions on the application', function () {
+    it('should register a user successfully', function () {
+        $payload = generateRandomUserObject();
 
-it('registra um novo usuário', function () {
-    $payload = [
-        'name' => 'Teste',
-        'email' => 'teste@example.com',
-        'password' => 'secret123',
-        'password_confirmation' => 'secret123',
-    ];
+        $response = $this->postJson('/api/register', $payload);
 
-    $response = $this->postJson('/api/register', $payload);
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'user' => ['id', 'name', 'email'],
+                    'token'
+                ]
+            ]);
 
-    $response->assertStatus(201)
-             ->assertJsonStructure([
-                 'success',
-                 'data' => [
-                     'user' => ['id', 'name', 'email'],
-                     'token'
-                 ]
-             ]);
+        $this->assertDatabaseHas('users', ['email' => $payload['email']]);
+    });
 
-    $this->assertDatabaseHas('users', ['email' => 'teste@example.com']);
-});
+    it('should login in the application successfully', function () {
+        $user = getRandomUser();
 
-it('faz login com credenciais corretas', function () {
-    $user = User::factory()->create([
-        'password' => Hash::make('senha123')
-    ]);
+        $response = $this->postJson('/api/login', [
+            'email'    => $user->email,
+            'password' => 'password'
+        ]);
 
-    $response = $this->postJson('/api/login', [
-        'email' => $user->email,
-        'password' => 'senha123'
-    ]);
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'user' => ['id', 'name', 'email'],
+                    'token'
+                ]
+            ]);
+    });
 
-    $response->assertStatus(200)
-             ->assertJsonStructure([
-                 'success',
-                 'data' => [
-                     'user' => ['id', 'name', 'email'],
-                     'token'
-                 ]
-             ]);
+    it('should delete the account of the user', function () {
+        actingAsUser();
+
+        $response = $this->deleteJson('/api/user/delete', [
+            'password' => 'password'
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson(fn ($json) =>
+                $json->hasAll(['success', 'message'])
+                    ->where('success', true)
+                    ->where('message', 'Conta excluída com sucesso!')
+                    ->has('data')
+            );
+    });
 });

@@ -1,8 +1,11 @@
 <?php
 
+use App\Models\Contact;
+use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use Laravel\Sanctum\Sanctum;
 
-function fakeViaCepSingle()
+function fakeViaCepSingle(): void
 {
     Http::fake([
         'https://viacep.com.br/*' => Http::response([
@@ -15,7 +18,7 @@ function fakeViaCepSingle()
     ]);
 }
 
-function fakeViaCepMultiple()
+function fakeViaCepMultiple(): void
 {
     Http::fake([
         'https://viacep.com.br/*' => Http::response([
@@ -45,4 +48,32 @@ function fakeViaCepMultiple()
             ]
         ], 200)
     ]);
+}
+
+function actingAsUser()
+{
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    return $user;
+}
+
+function generateRandomUserObject(): array
+{
+    return User::factory()->raw();
+}
+
+function generateRandomContactObject(): array
+{
+    return Contact::factory()->raw();
+}
+
+function getRandomUser(): User
+{
+    return User::inRandomOrder()->first();
+}
+
+function getRandomContact(): Contact
+{
+    return Contact::inRandomOrder()->first();
 }

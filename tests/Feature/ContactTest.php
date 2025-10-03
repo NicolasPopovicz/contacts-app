@@ -1,35 +1,53 @@
 <?php
 
-use App\Models\User;
-use Laravel\Sanctum\Sanctum;
+describe('Testing basic\'s contacts functionalities', function () {
+    it('should create a contact while authenticated.', function () {
+        $user    = actingAsUser();
+        $payload = generateRandomContactObject();
 
-it('cria um contato autenticado', function () {
-    $user = User::factory()->create();
+        $payload['user_id'] = $user->id;
 
-    Sanctum::actingAs($user);
+        $response = $this->postJson('/api/contact/create', $payload);
 
-    $payload = [
-        'user_id'    => $user->id,
-        'name'       => 'Contato 1',
-        'cpf'        => '12345678900',
-        'phone'      => '11999999999',
-        'address'    => 'Rua Exemplo',
-        'complement' => null,
-        'cep'        => '82840999',
-        'number'     => '1222',
-        'city'       => 'São Paulo',
-        'state'      => 'SP',
-        'latitude'   => '-45.67324',
-        'longitude'  => '-45.23467',
-    ];
+        $response->assertStatus(201)
+            ->assertJson(fn ($json) =>
+                $json->hasAll(['success', 'message'])
+                    ->where('success', true)
+                    ->where('message', "Contato '{$payload['name']}' cadastrado com sucesso!")
+                    ->has('data')
+            );
+    });
 
-    $response = $this->postJson('/api/contact/create', $payload);
+    it('should update a contact', function () {
+        actingAsUser();
 
-    $response->assertStatus(201)
-             ->assertJson([
-                 'success' => true,
-                 'message' => 'Contato \'Contato 1\' cadastrado com sucesso!'
-             ]);
+        $payload   = generateRandomContactObject();
+        $contactId = getRandomContact();
 
-    $this->assertDatabaseHas('contacts', ['cpf' => '12345678900']);
+        $response = $this->putJson("/api/contact/{$contactId->id}/update", $payload);
+
+        $response->assertStatus(200)
+            ->assertJson(fn ($json) =>
+                $json->hasAll(['success', 'message'])
+                    ->where('success', true)
+                    ->has('data')
+            );
+    });
+
+    it('should delete a contact', function () {
+        actingAsUser();
+
+        $contactId = getRandomContact();
+
+        $response = $this->deleteJson("/api/contact/{$contactId->id}/delete");
+
+        $response->assertStatus(200)
+            ->assertJson(fn ($json) =>
+                $json->hasAll(['success', 'message'])
+                    ->where('success', true)
+                    ->where('message', 'Contato excluído com sucesso!')
+                    ->has('data')
+            );
+    });
 });
+

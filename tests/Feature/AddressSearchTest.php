@@ -4,8 +4,8 @@ beforeEach(function () {
     config()->set('services.google.geocoding_key', 'fake-api-key-for-tests');
 });
 
-describe('Testa consulta de endereços de múltiplas formas', function () {
-    it('busca endereço via cep', function () {
+describe('Testing address searches in various ', function () {
+    it('search address by postcode', function () {
         actingAsUser();
         fakeViaCepSingle();
 
@@ -20,7 +20,7 @@ describe('Testa consulta de endereços de múltiplas formas', function () {
             );
     });
 
-    it('retorna múltiplos endereços ao buscar por estado/cidade/endereço', function () {
+    it('search address by state/city/address and returning multiple options', function () {
         actingAsUser();
         fakeViaCepMultiple();
 
