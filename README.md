@@ -1,61 +1,153 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📦 Backend - API de Contatos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API desenvolvida em **Laravel 12 + Sanctum + PostgreSQL** para gerenciar **contatos** e **endereços**, além de autenticação, recuperação de senha e integração com Google Maps e ViaCep.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Funcionalidades
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Autenticação e autorização com **Sanctum** (login, logout, registro, exclusão de conta).
+- Recuperação de senha via e-mail (Gmail SMTP).
+- Gerenciamento de **contatos** (CRUD completo).
+- Integração com **ViaCep** e **Google Geocoding** para buscar endereço e coordenadas.
+- Paginação, ordenação e filtros nos contatos.
+- Middleware para proteger rotas autenticadas.
+- Estrutura em camadas (Controllers, Services, DTOs, Requests, Models).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## ⚙️ Tecnologias
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **PHP 8.x**
+- **Laravel 12**
+- **PostgreSQL v17**
+- **Sanctum**
+- **Mail (SMTP Gmail)**
+- **ViaCep API**
+- **Google Geocoding API**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📂 Estrutura básica
 
-## Laravel Sponsors
+- `app/`
+- `DTO/`
+- `External/ # Integrações externas (ViaCep, GoogleGeolocation)`
+- `Http/`
+- `Controllers/`
+- `Requests/`
+- `Models/`
+- `Services/`
+- `routes/`
+- `api.php`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🔑 Rotas da API
 
-## Contributing
+### 🔐 Autenticação
+| Método | Rota                    | Descrição                                 | Auth |
+|--------|-------------------------|-------------------------------------------|------|
+| POST   | /register               | Registro de novo usuário                  |  ❌  |
+| POST   | /login                  | Login e obtenção de token                 |  ❌  |
+| POST   | /logout                 | Logout e revogação do token               |  ✅  |
+| DELETE | /user/delete            | Exclusão de conta (requer senha)          |  ✅  |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+### 🔑 Recuperação de senha
+| Método | Rota                    | Descrição                                 | Auth |
+|--------|-------------------------|-------------------------------------------|------|
+| POST   | /forgot-password        | Envia e-mail de recuperação               |  ❌  |
+| POST   | /reset-password         | Redefine a senha usando token do e-mail   |  ❌  |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+### 👤 Contatos
+| Método | Rota                    | Descrição                                 | Auth |
+|--------|-------------------------|-------------------------------------------|------|
+| GET    | /contacts/list          | Lista contatos (com paginação e filtros)  |  ✅  |
+| POST   | /contact/create         | Cria novo contato                         |  ✅  |
+| PUT    | /contact/{id}/update    | Atualiza um contato                       |  ✅  |
+| DELETE | /contact/{id}/delete    | Exclui um contato                         |  ✅  |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+### 🌍 Endereços
+| Método | Rota                    | Descrição                                 | Auth |
+|--------|-------------------------|-------------------------------------------|------|
+| GET    | /address/search         | Busca endereço (ViaCep + Geocoding)       |  ✅  |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## ⚡ Configurações necessárias
+- Crie `.env` com base no `.env.example`
+- Configure o banco, e-mail e API key do Google:
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=contacts_db
+DB_USERNAME=postgres
+DB_PASSWORD=...
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=seuemail@gmail.com
+MAIL_PASSWORD=sua_senha_app
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=seuemail@gmail.com
+MAIL_FROM_NAME="Contacts API"
+
+GOOGLE_GEOCODING_KEY=chave_google
+```
+
+▶️ Rodando o projeto
+
+```bash
+composer install
+php artisan migrate
+php artisan serve
+```
+
+A API estará em http://localhost:8000.
+
+## 📮 Exemplos de payload
+
+### Registro
+```JSON
+{
+    "name": "Fulano",
+    "email": "fulano@example.com",
+    "password": "123456",
+    "password_confirmation": "123456"
+}
+```
+
+### Login
+```JSON
+{
+    "email": "fulano@example.com",
+    "password": "123456"
+}
+```
+### Contato
+
+```JSON
+{
+    "name": "Contato 1",
+    "cpf": "12345678900",
+    "phone": "11999999999",
+    "address": "Rua Exemplo",
+    "city": "São Paulo",
+    "state": "SP",
+    "latitude": "-23.55052",
+    "longitude": "-46.633308"
+}
+```
+
+## ✅ Testando
+
+Use **Postman** ou **Insomnia** com o token de autenticação enviado no `Authorization: Bearer <token>`.
