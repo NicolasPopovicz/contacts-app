@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Contact>
@@ -17,7 +18,7 @@ class ContactFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id'    => 1,
+            'user_id'    => Auth::user()->id,
             'name'       => fake()->name(),
             'cpf'        => (string) fake()->unique()->numberBetween(10000000000, 99999999999),
             'phone'      => (string) fake()->unique()->numberBetween(10000000000, 99999999999),

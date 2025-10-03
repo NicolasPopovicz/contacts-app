@@ -58,6 +58,13 @@ function actingAsUser()
     return $user;
 }
 
+function createRandomContacts($authUserId)
+{
+    Contact::factory()->count(5)->create([
+        'user_id' => $authUserId
+    ]);
+}
+
 function generateRandomUserObject(): array
 {
     return User::factory()->raw();
@@ -73,7 +80,9 @@ function getRandomUser(): User
     return User::inRandomOrder()->first();
 }
 
-function getRandomContact(): Contact
+function getRandomContact($authUserId = null): Contact
 {
-    return Contact::inRandomOrder()->first();
+    return !is_null($authUserId)
+        ? Contact::where('user_id', $authUserId)->get()->first()
+        : Contact::inRandomOrder()->first();
 }

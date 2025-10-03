@@ -82,7 +82,7 @@ class UserService
     public function sendEmailRecoverLogin(ForgotPasswordDTO $dto): bool
     {
         try {
-            $status = Password::sendResetLink(['email' =>$dto->email]);
+            $status = Password::sendResetLink(['email' => $dto->email]);
         } catch (Throwable $th) {
             throw new Exception($th->getMessage(), 500);
         } catch (Exception $e) {

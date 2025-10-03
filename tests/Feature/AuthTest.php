@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Notification;
+
 describe('Testing User\'s actions on the application', function () {
     it('should register a user successfully', function () {
         $payload = generateRandomUserObject();
@@ -37,6 +40,31 @@ describe('Testing User\'s actions on the application', function () {
                 ]
             ]);
     });
+
+    it('should do the process of recovering the password (send link to an e-mail an then click to recover)', function () {
+        Notification::fake();
+
+        $user = getRandomUser();
+
+        $this->postJson('/api/forgot-password', [
+            'email' => $user->email
+        ])->assertStatus(200);
+
+        $token = '';
+        Notification::assertSentTo($user, ResetPassword::class, function ($notification) use (&$token) {
+            $token = $notification->token;
+            return true;
+        });
+
+        $this->postJson('/api/reset-password', [
+            'email'                 => $user->email,
+            'password'              => 'new-pass',
+            'password_confirmation' => 'new-pass',
+            'token'                 => $token,
+        ])->assertStatus(200)
+        ->assertJsonPath('success', true);
+    });
+
 
     it('should delete the account of the user', function () {
         actingAsUser();
