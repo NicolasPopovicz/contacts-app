@@ -88,7 +88,7 @@ API desenvolvida em **Laravel 12 + Sanctum + PostgreSQL** para gerenciar **conta
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
-DB_DATABASE=contacts_db
+DB_DATABASE=contacts
 DB_USERNAME=postgres
 DB_PASSWORD=...
 
@@ -104,7 +104,7 @@ MAIL_FROM_NAME="Contacts API"
 GOOGLE_GEOCODING_KEY=chave_google
 ```
 
-▶️ Rodando o projeto
+## ▶️ Rodando o projeto
 
 ```bash
 composer install
